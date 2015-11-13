@@ -37,4 +37,7 @@
 
     <!-- Whether to show edge light only when the device is face down by default -->
     <java-symbol type="bool" name="config_edgeLightFaceDownEnabledByDefault" />
+
+    <!-- Vendor mismatch fingerprint warning -->
+    <java-symbol type="string" name="system_error_vendorprint" />
 </resources>

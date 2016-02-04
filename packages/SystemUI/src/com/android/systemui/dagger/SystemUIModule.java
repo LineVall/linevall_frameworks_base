@@ -58,6 +58,7 @@ import com.android.systemui.keyguard.ui.view.layout.blueprints.KeyguardBlueprint
 import com.android.systemui.log.dagger.LogModule;
 import com.android.systemui.log.dagger.MonitorLog;
 import com.android.systemui.log.table.TableLogBuffer;
+import com.android.systemui.linevall.LinevallModule;
 import com.android.systemui.mediaprojection.appselector.MediaProjectionModule;
 import com.android.systemui.mediaprojection.taskswitcher.MediaProjectionTaskSwitcherModule;
 import com.android.systemui.model.SysUiState;
@@ -180,6 +181,7 @@ import javax.inject.Named;
             GarbageMonitorModule.class,
             KeyboardModule.class,
             LetterboxModule.class,
+            LinevallModule.class,
             KeyguardBlueprintModule.class,
             LogModule.class,
             MediaProjectionModule.class,

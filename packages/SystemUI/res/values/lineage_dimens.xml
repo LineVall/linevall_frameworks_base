@@ -32,4 +32,8 @@
     <!-- QS Header height full -->
     <dimen name="qs_header_height_full">200dp</dimen>
 
+    <!-- BurnIn Protection -->
+    <dimen name="burnin_protection_horizontal_shift">1dp</dimen>
+    <dimen name="burnin_protection_vertical_shift">1dp</dimen>
+
 </resources>

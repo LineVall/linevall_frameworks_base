@@ -351,6 +351,10 @@ public interface CentralSurfaces extends Dumpable, LifecycleOwner, CoreStartable
 
     GameSpaceManager getGameSpaceManager();
 
+    void brightnessControl(MotionEvent event);
+
+    void onBrightnessChanged(boolean upOrCancel);
+
     void startActivity(android.content.Intent intent, boolean dismiss);
     void startPendingIntentDismissingKeyguard(android.app.PendingIntent intent);
     com.android.systemui.shade.ShadeViewController getNotificationPanelViewController();

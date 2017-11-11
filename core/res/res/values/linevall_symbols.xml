@@ -15,8 +15,8 @@
 -->
 <resources>
     <string name="app_name">ChoreographerTests</string>
-	
-	<!-- Light / Regular style fonts -->
+
+    <!-- Light / Regular style fonts -->
     <java-symbol type="string" name="config_lightFontFamily" />
     <java-symbol type="string" name="config_regularFontFamily" />
 
@@ -31,4 +31,7 @@
 
     <!-- Whether device has Google Tensor SoC -->
     <java-symbol type="bool" name="config_hasTensorSoC" />
+
+    <!-- Whether device supports an alt. ambient display -->
+    <java-symbol type="bool" name="config_alt_ambient_display" />
 </resources>

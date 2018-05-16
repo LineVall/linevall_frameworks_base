@@ -27,6 +27,7 @@ import com.android.systemui.qs.tiles.DataSwitchTile
 import com.android.systemui.qs.tiles.HeadsUpTile
 import com.android.systemui.qs.tiles.SoundTile
 import com.android.systemui.qs.tiles.PowerShareTile
+import com.android.systemui.qs.tiles.ReadingModeTile
 import com.android.systemui.qs.tiles.SyncTile
 import com.android.systemui.qs.tiles.UsbTetherTile
 import com.android.systemui.qs.tiles.VpnTile
@@ -93,6 +94,12 @@ interface LinevallOSModule {
     @IntoMap
     @StringKey(SoundTile.TILE_SPEC)
     fun bindSoundTile(soundTile: SoundTile): QSTileImpl<*>
+
+    /** Inject ReadingModeTile into tileMap in QSModule */
+    @Binds
+    @IntoMap
+    @StringKey(ReadingModeTile.TILE_SPEC)
+    fun bindReadingModeTile(readingModeTile: ReadingModeTile): QSTileImpl<*>
 
     /** Inject SyncTile into tileMap in QSModule */
     @Binds

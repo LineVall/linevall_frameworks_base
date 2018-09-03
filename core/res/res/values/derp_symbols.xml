@@ -48,4 +48,7 @@
     <java-symbol type="dimen" name="min_window_blur_radius" />
     <java-symbol type="dimen" name="max_window_blur_radius" />
     <java-symbol type="dimen" name="max_shade_window_blur_radius" />
+
+    <!-- Bootleg unneccesary gradient declaration | Just for our shishu bars -->
+    <java-symbol type="color" name="bootleg_accent_gradient_end_color" />
 </resources>

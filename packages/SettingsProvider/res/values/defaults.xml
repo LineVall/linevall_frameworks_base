@@ -324,4 +324,6 @@
 
     <bool name="def_text_show_password">false</bool>
 
+    <!-- Default for Settings.Global.DEVELOPMENT_SETTINGS_ENABLED -->
+    <integer  name="def_development_settings">1</integer>
 </resources>

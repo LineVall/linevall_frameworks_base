@@ -32,4 +32,7 @@
 
     <!-- Whether to show edge light only when the device is face down by default -->
     <bool name="config_edgeLightFaceDownEnabledByDefault">false</bool>
+
+    <!-- Whether or not we should show vendor mismatch message -->
+    <bool name="config_show_vendor_mismatch_message">true</bool>
 </resources>

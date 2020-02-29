@@ -7443,6 +7443,9 @@ message MetricsEvent {
     // Panel for Bluetooth
     PANEL_BLUETOOTH = 1752;
 
+    // Panel for Mobile Data
+    PANEL_MOBILE_DATA = 1753;
+
     // END OF AOSP CONSTANTS
   }
 }

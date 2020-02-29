@@ -7439,6 +7439,10 @@ message MetricsEvent {
     
     // LineVall Constant
     LINEVALL = 1751;
+
+    // Panel for Bluetooth
+    PANEL_BLUETOOTH = 1752;
+
     // END OF AOSP CONSTANTS
   }
 }

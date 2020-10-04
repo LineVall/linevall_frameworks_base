@@ -153,4 +153,7 @@
     <string name="screenrecord_hevc_switch_label">Enable HEVC</string>
     <string name="screenrecord_hevc_switch_summary">Use more efficient HEVC video encoding</string>
 
+    <!-- Statusbar Icons NFC -->
+    <string name="status_bar_nfc">NFC</string>
+
 </resources>

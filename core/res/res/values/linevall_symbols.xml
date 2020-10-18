@@ -59,4 +59,15 @@
     <java-symbol type="array" name="notification_light_package_mapping" />
     <!-- On-device lights (LED) capabilities -->
     <java-symbol type="integer" name="config_deviceLightCapabilities" />
+
+     <!-- Advanced reboot -->
+     <java-symbol type="string" name="reboot_to_recovery_title" />
+     <java-symbol type="string" name="reboot_to_recovery_message" />
+     <java-symbol type="string" name="reboot_to_bootloader_title" />
+     <java-symbol type="string" name="reboot_to_bootloader_message" />
+     <java-symbol type="string" name="reboot_title" />
+     <java-symbol type="string" name="reboot_message" />
+
+     <!-- Global Actions pref list -->
+     <java-symbol type="array" name="custom_config_globalActionsList" />
 </resources>

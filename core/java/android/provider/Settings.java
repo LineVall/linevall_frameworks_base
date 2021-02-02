@@ -5610,7 +5610,26 @@ public final class Settings {
         public static final String FP_SUCCESS_VIBRATE = "fp_success_vibrate";
 
         /**
-         * Whether to enable or disable vibration on failed fingerprint auth
+        * Show ambient icons on lockscreen
+        * @hide
+        */
+        @Readable
+        public static final String AMBIENT_ICONS_LOCKSCREEN = "ambient_icons_lockscreen";
+
+        /**
+        * Change size of ambient icons on lockscreen
+        * @hide
+        */
+        public static final String AMBIENT_ICONS_SIZE = "ambient_icons_size";
+
+        /**
+        * Change color of ambient icons on lockscreen
+        * @hide
+        */
+        public static final String AMBIENT_ICONS_COLOR = "ambient_icons_color";
+
+        /**
+         * Whether to show power menu on LockScreen
          * @hide
          */
         public static final String FP_ERROR_VIBRATE = "fp_error_vibrate";

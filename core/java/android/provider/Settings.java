@@ -13327,6 +13327,16 @@ public final class Settings {
         public static final String SHOW_CLIPBOARD_OVERLAY = "show_clipboard_overlay";
 
         /**
+         * @hide
+         */
+        public static final String UDFPS_ANIM = "udfps_anim";
+
+        /**
+         * @hide
+         */
+        public static final String UDFPS_ANIM_STYLE = "udfps_anim_style";
+
+        /**
          * These entries are considered common between the personal and the managed profile,
          * since the managed profile doesn't get to change them.
          */

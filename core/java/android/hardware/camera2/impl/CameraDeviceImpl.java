@@ -179,6 +179,8 @@ public class CameraDeviceImpl extends CameraDevice
     private final int mTotalPartialCount;
     private final Context mContext;
 
+    private final boolean mForceMultiResolution;
+
     private static final long NANO_PER_SECOND = 1000000000; //ns
 
     /**
@@ -457,6 +459,9 @@ public class CameraDeviceImpl extends CameraDevice
             mTotalPartialCount = partialCount;
         }
         mIsPrivilegedApp = checkPrivilegedAppList();
+
+        mForceMultiResolution = mContext.getResources().getBoolean(
+                com.android.internal.R.bool.config_forceMultiResolution);
     }
 
     private Map<String, CameraCharacteristics> getPhysicalIdToChars() {
@@ -1816,7 +1821,7 @@ public class CameraDeviceImpl extends CameraDevice
             return;
         }
         int inputFormat = inputConfig.getFormat();
-        if (inputConfig.isMultiResolution()) {
+        if (inputConfig.isMultiResolution() || mForceMultiResolution) {
             MultiResolutionStreamConfigurationMap configMap = mCharacteristics.get(
                     CameraCharacteristics.SCALER_MULTI_RESOLUTION_STREAM_CONFIGURATION_MAP);
 

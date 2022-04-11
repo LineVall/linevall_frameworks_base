@@ -3,7 +3,7 @@
      SPDX-FileCopyrightText: DerpFest AOSP
      SPDX-License-Identifier: Apache-2.0
 -->
-<resources>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
 
     <!-- Auto reboot Suggestion/Reminder -->
     <string name="notification_channel_reboot_suggestion">Reboot Suggestion</string>
@@ -96,4 +96,10 @@
     <string name="quick_settings_volume_tile_muted">Muted</string>
     <string name="quick_settings_volume_tile_low">Low</string>
     <string name="quick_settings_volume_tile_high">High</string>
+
+    <!-- Preferred network tile -->
+    <string name="quick_settings_preferred_network_label">Preferred network</string>
+    <string name="quick_settings_preferred_network_lte">4g / LTE</string>
+    <string name="quick_settings_preferred_network_nr">5g / NR</string>
+    <string name="quick_settings_preferred_network_unsupported">Unsupported</string>
 </resources>

@@ -36,10 +36,13 @@ import static com.android.systemui.statusbar.notification.stack.StackStateAnimat
 import static com.android.systemui.util.kotlin.JavaAdapterKt.collectFlow;
 
 import android.animation.ObjectAnimator;
+import android.content.Context;
 import android.content.res.Configuration;
 import android.graphics.Point;
 import android.os.Trace;
 import android.os.UserHandle;
+import android.os.VibrationEffect;
+import android.os.Vibrator;
 import android.provider.Settings;
 import android.service.notification.StatusBarNotification;
 import android.util.Log;
@@ -63,6 +66,7 @@ import com.android.internal.statusbar.IStatusBarService;
 import com.android.internal.view.OneShotPreDrawListener;
 import com.android.systemui.Dumpable;
 import com.android.systemui.ExpandHelper;
+import com.android.systemui.Dependency;
 import com.android.systemui.Gefingerpoken;
 import com.android.systemui.bouncer.domain.interactor.PrimaryBouncerInteractor;
 import com.android.systemui.classifier.Classifier;
@@ -213,6 +217,11 @@ public class NotificationStackScrollLayoutController implements Dumpable {
     private final GroupExpansionManager mGroupExpansionManager;
     private final SeenNotificationsInteractor mSeenNotificationsInteractor;
     private final KeyguardTransitionRepository mKeyguardTransitionRepo;
+
+    private static final VibrationEffect EFFECT_CLICK =
+            VibrationEffect.createPredefined(VibrationEffect.EFFECT_CLICK);
+    private Vibrator mVibrator;
+
     private NotificationStackScrollLayout mView;
     private TouchHandler mTouchHandler;
     private NotificationSwipeHelper mSwipeHelper;
@@ -885,12 +894,19 @@ public class NotificationStackScrollLayoutController implements Dumpable {
             }
         });
 
+        if (mView.getContext() != null) {
+            mVibrator = (Vibrator) mView.getContext().getSystemService(Context.VIBRATOR_SERVICE);
+        }
+
         mView.initView(mView.getContext(), mSwipeHelper, mNotificationStackSizeCalculator);
         mView.setKeyguardBypassEnabled(mKeyguardBypassController.getBypassEnabled());
         mKeyguardBypassController
                 .registerOnBypassStateChangedListener(mView::setKeyguardBypassEnabled);
         if (!FooterViewRefactor.isEnabled()) {
             mView.setManageButtonClickListener(v -> {
+                if (mVibrator != null) {
+                    mVibrator.vibrate(EFFECT_CLICK);
+                }
                 if (mNotificationActivityStarter != null) {
                     mNotificationActivityStarter.startHistoryIntent(v, mView.isHistoryShown());
                 }

@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-     Copyright (C) 2016 The CyanogenMod Project
-     Copyright (C) 2018-2022 The LineageOS Project
+     Copyright (C) 2016-2023 crDroid Android Project
 
      Licensed under the Apache License, Version 2.0 (the "License");
      you may not use this file except in compliance with the License.
@@ -16,11 +15,15 @@
      limitations under the License.
 -->
 <resources>
-    <!-- Width of the battery icon in the status bar when set to circle style. -->
-    <dimen name="status_bar_battery_icon_circle_width">14.5dp</dimen>
 
-    <!-- Largest size an avatar might need to be drawn in the power menu user picker -->
-    <dimen name="global_actions_avatar_size">24dp</dimen>
+    <!-- Screen Record -->
+    <dimen name="screenrecord_dot_size">48dp</dimen>
+    
+    <!-- Height of the landscape battery icon in the status bar. -->
+    <dimen name="status_bar_battery_icon_height_landscape">10.5dp</dimen>
+
+    <!-- Width of the landscape battery icon in the status bar. -->
+    <dimen name="status_bar_battery_icon_width_landscape">20dp</dimen>
 
     <!-- Old style mobile data indicators -->
     <dimen name="status_bar_mobile_signal_with_type_height">18dp</dimen>
@@ -28,6 +31,4 @@
     <dimen name="status_bar_mobile_signal_width">16dp</dimen>
     <dimen name="status_bar_mobile_type_height">9dp</dimen>
     <dimen name="status_bar_mobile_type_width">12dp</dimen>
-
-
 </resources>

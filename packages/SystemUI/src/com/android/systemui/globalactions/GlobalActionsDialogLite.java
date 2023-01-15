@@ -74,6 +74,7 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
 import android.os.PowerManager;
+import android.os.Process;
 import android.os.RemoteException;
 import android.os.SystemProperties;
 import android.os.Trace;
@@ -732,6 +733,8 @@ public class GlobalActionsDialogLite implements DialogInterface.OnDismissListene
                         && isPanicAvailable()) {
                     addIfShouldShowAction(tempActions, new PanicAction());
                 }
+            } else if (GLOBAL_ACTION_KEY_RESTART_SYSTEMUI.equals(actionKey)) {
+                addIfShouldShowAction(tempActions, new RestartSystemUIAction());
             } else {
                 Log.e(TAG, "Invalid global action key " + actionKey);
             }
@@ -1491,6 +1494,27 @@ public class GlobalActionsDialogLite implements DialogInterface.OnDismissListene
             } else {
                 return false;
             }
+        }
+    }
+
+    private final class RestartSystemUIAction extends SinglePressAction {
+        private RestartSystemUIAction() {
+            super(com.android.systemui.res.R.drawable.ic_restart_systemui, com.android.systemui.res.R.string.global_action_restart_systemui);
+        }
+
+        @Override
+        public boolean showDuringKeyguard() {
+            return true;
+        }
+
+        @Override
+        public boolean showBeforeProvisioning() {
+            return true;
+        }
+
+        @Override
+        public void onPress() {
+            Process.killProcess(Process.myPid());
         }
     }
 

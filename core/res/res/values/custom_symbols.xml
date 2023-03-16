@@ -28,4 +28,8 @@
     <!-- Lock gesture -->
     <java-symbol type="string" name="gesture_locked_warning" />
 
+    <!-- Title & summary of notification letting users know that battery saver is now on -->
+    <java-symbol type="string" name="battery_saver_on_notification_title" />
+    <java-symbol type="string" name="battery_saver_on_notification_summary" />
+
 </resources>

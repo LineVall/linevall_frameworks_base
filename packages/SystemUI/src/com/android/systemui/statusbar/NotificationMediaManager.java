@@ -77,6 +77,8 @@ import com.android.systemui.tuner.TunerService;
 import com.android.systemui.util.Utils;
 import com.android.systemui.util.concurrency.DelayableExecutor;
 
+import dagger.Lazy;
+
 import java.io.PrintWriter;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -89,8 +91,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
-
-import dagger.Lazy;
 
 /**
  * Handles tasks and state related to media notifications. For example, there is a 'current' media
@@ -187,10 +187,47 @@ public class NotificationMediaManager implements Dumpable, TunerService.Tunable 
                 Log.v(TAG, "DEBUG_MEDIA: onMetadataChanged: " + metadata);
             }
             mMediaArtworkProcessor.clearCache();
-            mMediaMetadata = metadata;
+            mMediaMetadata = cleanMetadata(metadata);
             dispatchUpdateMediaMetaData(true /* changed */, true /* allowAnimation */);
         }
     };
+
+    /**
+     * If this build is not configured for lockscreen artwork, clear artwork references from the
+     * metadata to avoid excess memory usage. Otherwise, return as is.
+     * @param data Original metadata
+     * @return a copy without artwork data, or original
+     */
+    private MediaMetadata cleanMetadata(MediaMetadata data) {
+        if (SHOW_LOCKSCREEN_MEDIA_ARTWORK) {
+            return data;
+        }
+        if (data == null) {
+            return null;
+        }
+        if (DEBUG_MEDIA) {
+            String[] artKeys = new String[] {
+                MediaMetadata.METADATA_KEY_ART,
+                MediaMetadata.METADATA_KEY_ALBUM_ART,
+                MediaMetadata.METADATA_KEY_DISPLAY_ICON,
+                MediaMetadata.METADATA_KEY_ALBUM_ART_URI,
+                MediaMetadata.METADATA_KEY_ART_URI,
+                MediaMetadata.METADATA_KEY_DISPLAY_ICON_URI
+            };
+            Log.v(TAG, "DEBUG_MEDIA: removing artwork from metadata");
+            for (String key: artKeys) {
+                Log.v(TAG, "  " + key + ": " + data.containsKey(key));
+            }
+        }
+        return new MediaMetadata.Builder(data)
+                .putBitmap(MediaMetadata.METADATA_KEY_ART, null)
+                .putBitmap(MediaMetadata.METADATA_KEY_ALBUM_ART, null)
+                .putBitmap(MediaMetadata.METADATA_KEY_DISPLAY_ICON, null)
+                .putString(MediaMetadata.METADATA_KEY_ALBUM_ART_URI, null)
+                .putString(MediaMetadata.METADATA_KEY_ART_URI, null)
+                .putString(MediaMetadata.METADATA_KEY_DISPLAY_ICON_URI, null)
+                .build();
+    }
 
     /**
      * Injected constructor. See {@link CentralSurfacesModule}.
@@ -353,6 +390,7 @@ public class NotificationMediaManager implements Dumpable, TunerService.Tunable 
         return mMediaNotificationKey;
     }
 
+    @VisibleForTesting
     public MediaMetadata getMediaMetadata() {
         return mMediaMetadata;
     }
@@ -390,7 +428,7 @@ public class NotificationMediaManager implements Dumpable, TunerService.Tunable 
      * update this manager's internal state.
      * @return whether the current MediaMetadata changed (and needs to be announced to listeners).
      */
-    boolean findPlayingMediaNotification(
+    private boolean findPlayingMediaNotification(
             @NonNull Collection<NotificationEntry> allNotifications) {
         boolean metaDataChanged = false;
         // Promote the media notification with a controller in 'playing' state, if any.
@@ -423,7 +461,7 @@ public class NotificationMediaManager implements Dumpable, TunerService.Tunable 
             clearCurrentMediaNotificationSession();
             mMediaController = controller;
             mMediaController.registerCallback(mMediaListener);
-            mMediaMetadata = mMediaController.getMetadata();
+            mMediaMetadata = cleanMetadata(mMediaController.getMetadata());
             if (DEBUG_MEDIA) {
                 Log.v(TAG, "DEBUG_MEDIA: insert listener, found new controller: "
                         + mMediaController + ", receive metadata: " + mMediaMetadata);

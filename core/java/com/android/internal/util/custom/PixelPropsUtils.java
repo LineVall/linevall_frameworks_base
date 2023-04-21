@@ -107,7 +107,8 @@ public class PixelPropsUtils {
             "com.ea.gp.fifamobile",
             "com.gameloft.android.ANMP.GloftA9HM",
             "com.pearlabyss.blackdesertm",
-            "com.pearlabyss.blackdesertm.gl"
+            "com.pearlabyss.blackdesertm.gl",
+            "com.ea.gp.fifamobile"
     };
 
     // Packages to Spoof as Xperia 5

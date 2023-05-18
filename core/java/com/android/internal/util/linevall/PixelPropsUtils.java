@@ -70,6 +70,10 @@ public class PixelPropsUtils {
             "com.google.android.inputmethod.latin",
             "com.google.android.wallpaper.effects",
             "com.google.android.apps.emojiwallpaper"
+
+    private static final String[] packagesToChangePixel5 = {
+            "com.google.android.as",
+            "com.google.android.apps.nexuslauncher"
     };
 
     private static final String[] extraPackagesToChange = {
@@ -330,6 +334,9 @@ public class PixelPropsUtils {
             } else if (Arrays.asList(packagesToChangePixel2).contains(packageName)) {
                 if (isPixelDevice) return;
                 propsToChange.putAll(propsToChangePixel2);
+            } else if (Arrays.asList(packagesToChangePixel5).contains(packageName)) {
+                if (isPixelDevice) return;
+                propsToChange.putAll(propsToChangePixel5);
             } else if (Arrays.asList(packagesToChangePixel6Pro).contains(packageName)) {
                 if (isPixelDevice) return;
                 propsToChange.putAll(propsToChangePixel6Pro);

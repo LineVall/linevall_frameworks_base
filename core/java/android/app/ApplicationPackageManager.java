@@ -809,6 +809,10 @@ public class ApplicationPackageManager extends PackageManager {
                 }
             };
 
+    private static final String[] pTensorCodenames = {
+            "lynx"
+    };
+
     @Override
     public boolean hasSystemFeature(String name, int version) {
         return mHasSystemFeatureCache.query(new HasSystemFeatureQuery(name, version));

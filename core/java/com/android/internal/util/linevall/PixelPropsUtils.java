@@ -56,9 +56,13 @@ public class PixelPropsUtils {
             "com.snapchat.android"
     };
 
+    private static final String[] packagesToChangePixel5 = {
+            "com.android.vending",
+            "com.google.android.gms"
+    };
+
     private static final String[] extraPackagesToChange = {
             "com.android.chrome",
-            "com.android.vending",
             "com.breel.wallpapers20",
             "com.microsoft.android.smsorganizer",
             "com.nothing.smartcenter",
@@ -262,7 +266,7 @@ public class PixelPropsUtils {
             } else if (processName.toLowerCase().contains("persistent")
                         || processName.toLowerCase().contains("ui")
                         || processName.toLowerCase().contains("learning")) {
-                propsToChange.putAll(propsToChangePixel7Pro);
+                propsToChange.putAll(propsToChangePixel5);
             }
             return;
         }

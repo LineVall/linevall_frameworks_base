@@ -67,7 +67,9 @@ public class PixelPropsUtils {
             "com.google.android.apps.googleassistant",
             "com.google.android.gms",
             "com.google.android.googlequicksearchbox",
-            "com.google.android.inputmethod.latin"
+            "com.google.android.inputmethod.latin",
+            "com.google.android.wallpaper.effects",
+            "com.google.android.apps.emojiwallpaper"
     };
 
     private static final String[] extraPackagesToChange = {

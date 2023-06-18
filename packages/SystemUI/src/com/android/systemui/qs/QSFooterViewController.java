@@ -18,8 +18,15 @@ package com.android.systemui.qs;
 
 import static com.android.systemui.Flags.gsfQuickSettings;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.ClipData;
 import android.content.ClipboardManager;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.net.ConnectivityManager;
+import android.net.NetworkScoreManager;
+import android.net.wifi.WifiManager;
 import android.graphics.Typeface;
 import android.text.TextUtils;
 import android.view.View;
@@ -32,7 +39,11 @@ import com.android.systemui.qs.dagger.QSScope;
 import com.android.systemui.res.R;
 import com.android.systemui.retail.domain.interactor.RetailModeInteractor;
 import com.android.systemui.settings.UserTracker;
+import com.android.systemui.statusbar.connectivity.NetworkController;
+import com.android.systemui.statusbar.connectivity.SignalCallback;
 import com.android.systemui.util.ViewController;
+
+import com.android.settingslib.wifi.WifiStatusTracker;
 
 import javax.inject.Inject;
 
@@ -44,12 +55,29 @@ public class QSFooterViewController extends ViewController<QSFooterView> impleme
 
     private final UserTracker mUserTracker;
     private final QSPanelController mQsPanelController;
-    private final TextView mBuildText;
     private final PageIndicator mPageIndicator;
     private final View mEditButton;
     private final FalsingManager mFalsingManager;
     private final ActivityStarter mActivityStarter;
     private final RetailModeInteractor mRetailModeInteractor;
+    private final WifiStatusTracker mWifiTracker;
+    private final NetworkController mNetworkController;
+    private final Context mContext;
+
+    private final BroadcastReceiver mReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            mWifiTracker.handleBroadcast(intent);
+            onWifiStatusUpdated();
+        }
+    };
+
+    private final SignalCallback mSignalCallback = new SignalCallback() {
+        @Override
+        public void setNoSims(boolean show, boolean simDetected) {
+            mView.setNoSims(show);
+         }
+    };
 
     @Inject
     QSFooterViewController(QSFooterView view,
@@ -57,39 +85,27 @@ public class QSFooterViewController extends ViewController<QSFooterView> impleme
             FalsingManager falsingManager,
             ActivityStarter activityStarter,
             QSPanelController qsPanelController,
-            RetailModeInteractor retailModeInteractor
-    ) {
+            RetailModeInteractor retailModeInteractor,
+            NetworkController networkController,
+            Context context) {
         super(view);
         mUserTracker = userTracker;
         mQsPanelController = qsPanelController;
         mFalsingManager = falsingManager;
         mActivityStarter = activityStarter;
         mRetailModeInteractor = retailModeInteractor;
-
-        mBuildText = mView.findViewById(R.id.build);
-        if (gsfQuickSettings()) {
-            mBuildText.setTypeface(Typeface.create("gsf-body-medium", Typeface.NORMAL));
-        }
+        mNetworkController = networkController;
+        mContext = context;
         mPageIndicator = mView.findViewById(R.id.footer_page_indicator);
         mEditButton = mView.findViewById(android.R.id.edit);
+        mWifiTracker = new WifiStatusTracker(context, context.getSystemService(WifiManager.class),
+                context.getSystemService(NetworkScoreManager.class),
+                context.getSystemService(ConnectivityManager.class),
+                        this::onWifiStatusUpdated);
     }
 
     @Override
     protected void onViewAttached() {
-        mBuildText.setOnLongClickListener(view -> {
-            CharSequence buildText = mBuildText.getText();
-            if (!TextUtils.isEmpty(buildText)) {
-                ClipboardManager service =
-                        mUserTracker.getUserContext().getSystemService(ClipboardManager.class);
-                String label = getResources().getString(R.string.build_number_clip_data_label);
-                service.setPrimaryClip(ClipData.newPlainText(label, buildText));
-                Toast.makeText(getContext(), R.string.build_number_copy_toast, Toast.LENGTH_SHORT)
-                        .show();
-                return true;
-            }
-            return false;
-        });
-
         mEditButton.setOnClickListener(view -> {
             if (mFalsingManager.isFalseTap(FalsingManager.LOW_PENALTY)) {
                 return;
@@ -98,11 +114,22 @@ public class QSFooterViewController extends ViewController<QSFooterView> impleme
                     .postQSRunnableDismissingKeyguard(() -> mQsPanelController.showEdit(view));
         });
         mQsPanelController.setFooterPageIndicator(mPageIndicator);
-        mView.updateEverything();
+        final IntentFilter filter = new IntentFilter();
+        filter.addAction(WifiManager.WIFI_STATE_CHANGED_ACTION);
+        filter.addAction(WifiManager.NETWORK_STATE_CHANGED_ACTION);
+        filter.addAction(WifiManager.RSSI_CHANGED_ACTION);
+        mContext.registerReceiver(mReceiver, filter);
+        mWifiTracker.fetchInitialState();
+        mWifiTracker.setListening(true);
+        onWifiStatusUpdated();
+        mNetworkController.addCallback(mSignalCallback);
     }
 
     @Override
-    protected void onViewDetached() {}
+    protected void onViewDetached() {
+        mContext.unregisterReceiver(mReceiver);
+        mNetworkController.removeCallback(mSignalCallback);
+    }
 
     @Override
     public void setVisibility(int visibility) {
@@ -130,5 +157,10 @@ public class QSFooterViewController extends ViewController<QSFooterView> impleme
     @Override
     public void disable(int state1, int state2, boolean animate) {
         mView.disable(state2);
+    }
+
+    private void onWifiStatusUpdated() {
+        mView.setIsWifiConnected(mWifiTracker.connected);
+        mView.setWifiSsid(mWifiTracker.ssid);
     }
 }

@@ -49,7 +49,6 @@ public class PixelPropsUtils {
     private static final Map<String, Object> propsToChangeGeneric;
     private static final Map<String, Object> propsToChangePixel2;
     private static final Map<String, Object> propsToChangePixelTablet;
-    private static final Map<String, Object> propsToChangePixel6Pro;
     private static final Map<String, Object> propsToChangePixel7Pro;
     private static final Map<String, Object> propsToChangePixelXL;
     private static final Map<String, ArrayList<String>> propsToKeep;
@@ -62,14 +61,6 @@ public class PixelPropsUtils {
             "com.snapchat.android"
     };
 
-    private static final String[] packagesToChangePixel6Pro = {
-            "com.android.vending",
-            "com.google.android.gms",
-            "com.google.android.inputmethod.latin",
-            "com.google.android.as",
-            "com.google.android.wallpaper.effects",
-            "com.google.android.apps.emojiwallpaper"
-
     private static final String[] packagesToChangePixel5 = {
             "com.google.android.as",
             "com.google.android.apps.nexuslauncher"
@@ -81,6 +72,7 @@ public class PixelPropsUtils {
     };
 
     private static final String[] extraPackagesToChange = {
+            "com.android.vending",
             "com.android.chrome",
             "com.breel.wallpapers20",
             "com.microsoft.android.smsorganizer",
@@ -218,13 +210,6 @@ public class PixelPropsUtils {
         propsToChangePixel7Pro.put("PRODUCT", "cheetah");
         propsToChangePixel7Pro.put("MODEL", "Pixel 7 Pro");
         propsToChangePixel7Pro.put("FINGERPRINT", "google/cheetah/cheetah:13/TQ3A.230605.012/10204971:user/release-keys");
-        propsToChangePixel6Pro = new HashMap<>();
-        propsToChangePixel6Pro.put("BRAND", "google");
-        propsToChangePixel6Pro.put("MANUFACTURER", "Google");
-        propsToChangePixel6Pro.put("DEVICE", "raven");
-        propsToChangePixel6Pro.put("PRODUCT", "raven");
-        propsToChangePixel6Pro.put("MODEL", "Pixel 6 Pro");
-        propsToChangePixel6Pro.put("FINGERPRINT", "google/raven/raven:13/TQ3A.230605.010/10121037:user/release-keys");
         propsToChangePixel2 = new HashMap<>();
         propsToChangePixel2.put("BRAND", "google");
         propsToChangePixel2.put("MANUFACTURER", "Google");
@@ -319,7 +304,7 @@ public class PixelPropsUtils {
             } else if (processName.toLowerCase().contains("persistent")
                         || processName.toLowerCase().contains("ui")
                         || processName.toLowerCase().contains("learning")) {
-                propsToChange.putAll(propsToChangePixel6Pro);
+                propsToChange.putAll(propsToChangePixel7Pro);
             }
             return;
         }
@@ -342,9 +327,6 @@ public class PixelPropsUtils {
             } else if (Arrays.asList(packagesToChangePixel5).contains(packageName)) {
                 if (isPixelDevice) return;
                 propsToChange.putAll(propsToChangePixel5);
-            } else if (Arrays.asList(packagesToChangePixel6Pro).contains(packageName)) {
-                if (isPixelDevice) return;
-                propsToChange.putAll(propsToChangePixel6Pro);
             } else if (Arrays.asList(packagesToChangePixelTablet).contains(packageName)) {
                 if (isPixelDevice) return;
                 propsToChange.putAll(propsToChangePixelTablet);

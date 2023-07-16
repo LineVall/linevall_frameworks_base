@@ -48,6 +48,7 @@ public class PixelPropsUtils {
 
     private static final Map<String, Object> propsToChangeGeneric;
     private static final Map<String, Object> propsToChangePixel2;
+    private static final Map<String, Object> propsToChangePixel6Pro;
     private static final Map<String, Object> propsToChangePixel7Pro;
     private static final Map<String, Object> propsToChangePixel5a;
     private static final Map<String, Object> propsToChangePixelXL;
@@ -61,9 +62,7 @@ public class PixelPropsUtils {
             "com.snapchat.android"
     };
 
-    private static final String[] packagesToChangePixel5 = {
-            "com.google.android.as",
-            "com.google.android.apps.nexuslauncher"
+    private static final String[] packagesToChangePixel6Pro = {
     };
 
     private static final String[] packagesToChangePixel7Pro = {
@@ -198,6 +197,13 @@ public class PixelPropsUtils {
         propsToChangeGeneric = new HashMap<>();
         propsToChangeGeneric.put("TYPE", "user");
         propsToChangeGeneric.put("TAGS", "release-keys");
+        propsToChangePixel6Pro = new HashMap<>();
+        propsToChangePixel6Pro.put("BRAND", "google");
+        propsToChangePixel6Pro.put("MANUFACTURER", "Google");
+        propsToChangePixel6Pro.put("DEVICE", "raven");
+        propsToChangePixel6Pro.put("PRODUCT", "raven");
+        propsToChangePixel6Pro.put("MODEL", "Pixel 6 Pro");
+        propsToChangePixel6Pro.put("FINGERPRINT", "google/raven/raven:13/TQ3A.230705.001.A1/10217028:user/release-keys");
         propsToChangePixel7Pro = new HashMap<>();
         propsToChangePixel7Pro.put("BRAND", "google");
         propsToChangePixel7Pro.put("MANUFACTURER", "Google");
@@ -313,6 +319,7 @@ public class PixelPropsUtils {
         if (packageName.startsWith("com.google.")
                 || packageName.startsWith(SAMSUNG)
                 || Arrays.asList(packagesToChangePixel2).contains(packageName)
+                || Arrays.asList(packagesToChangePixel6Pro).contains(packageName)
                 || Arrays.asList(packagesToChangePixel7Pro).contains(packageName)
                 || Arrays.asList(extraPackagesToChange).contains(packageName)) {
 
@@ -327,9 +334,9 @@ public class PixelPropsUtils {
             } else if (Arrays.asList(packagesToChangePixel2).contains(packageName)) {
                 if (isPixelDevice) return;
                 propsToChange.putAll(propsToChangePixel2);
-            } else if (Arrays.asList(packagesToChangePixel5).contains(packageName)) {
+            } else if (Arrays.asList(packagesToChangePixel6Pro).contains(packageName)) {
                 if (isPixelDevice) return;
-                propsToChange.putAll(propsToChangePixel5);
+                propsToChange.putAll(propsToChangePixel6Pro);
             } else if (Arrays.asList(packagesToChangePixel7Pro).contains(packageName)) {
                 if (isPixelDevice) return;
                 propsToChange.putAll(propsToChangePixel7Pro);

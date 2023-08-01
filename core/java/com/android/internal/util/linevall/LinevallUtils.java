@@ -26,6 +26,8 @@ import android.hardware.camera2.CameraManager;
 import android.net.ConnectivityManager;
 import android.net.Network;
 import android.net.NetworkCapabilities;
+import android.os.PowerManager;
+import android.os.SystemProperties;
 
 public class LinevallUtils {
 

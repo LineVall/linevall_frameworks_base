@@ -167,6 +167,7 @@ import com.android.server.crashrecovery.CrashRecoveryAdaptor;
 import com.android.server.derpfest.AttestationService;
 import com.android.server.credentials.CredentialManagerService;
 import com.android.server.criticalevents.CriticalEventLog;
+import com.android.server.derpfest.CustomDeviceConfigService;
 import com.android.server.devicepolicy.DevicePolicyManagerService;
 import com.android.server.devicestate.DeviceStateManagerService;
 import com.android.server.display.DisplayManagerService;
@@ -2779,6 +2780,11 @@ public final class SystemServer implements Dumpable {
             // AttestationService
             t.traceBegin("AttestationService");
             mSystemServiceManager.startService(AttestationService.class);
+            t.traceEnd();
+
+            // CustomDeviceConfigService
+            t.traceBegin("StartCustomDeviceConfigService");
+            mSystemServiceManager.startService(CustomDeviceConfigService.class);
             t.traceEnd();
         }
 

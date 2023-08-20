@@ -108,6 +108,7 @@ public class PixelPropsUtils {
             "com.gameloft.android.ANMP.GloftA9HM",
             "com.pearlabyss.blackdesertm",
             "com.pearlabyss.blackdesertm.gl",
+            "com.tencent.tmgp.kr.codm",
             "com.ea.gp.fifamobile"
     };
 
@@ -115,7 +116,6 @@ public class PixelPropsUtils {
     private static final String[] packagesToChangeXP5 = {
             "com.activision.callofduty.shooter",
             "com.garena.game.codm",
-            "com.tencent.tmgp.kr.codm",
             "com.vng.codmvn"
     };
 

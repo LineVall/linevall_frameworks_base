@@ -25,4 +25,7 @@
     <!-- Ignore post running notifications for selected apps -->
     <java-symbol type="array" name="config_postNotificationIgnoredApps" />
 
+    <!-- Lock gesture -->
+    <java-symbol type="string" name="gesture_locked_warning" />
+
 </resources>

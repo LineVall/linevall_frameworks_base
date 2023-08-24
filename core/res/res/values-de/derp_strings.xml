@@ -1,10 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-     Copyright (C) 2024 DerpFest
+     Copyright (C) 2025 DerpFest
      SPDX-License-Identifier: Apache-2.0
 -->
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
 
     <!-- Vendor mismatch fingerprint warning [CHAR LIMIT=NONE] -->
     <string name="system_error_vendorprint">Das verwendete Vendor-Image stimmt nicht mit dem des Stand des Systems überein. Bitte das <xliff:g id="string">%s</xliff:g> Vendor-Image für ihr Gerät flashen.</string>
+
+    <!-- Button that copies the url to the log of a crashed application -->
+    <string name="aerr_copy">URL für das Absturzprotokoll kopieren</string>
+    <string name="url_copy_success">URL erfolgreich kopiert</string>
+    <string name="url_copy_failed">Beim Hochladen des Protokolls zu mkr/bin ist ein Fehler aufgetreten</string>
+
+    <!-- Pocket Lock -->
+    <string name="pocket_lock_message_long_press">Zum Entsperren Ein-/Aus-Taste gedrückt halten</string>
+    <string name="pocket_view_title">Taschenmodus aktiviert</string>
+    <string name="pocket_view_title_cancel">Befreie den markierten oberen Bereich des Geräts oder halte Ein-/Aus-Taste gedrückt, um den Taschenmodus zu beenden</string>
 </resources>

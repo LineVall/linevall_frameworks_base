@@ -1447,7 +1447,6 @@ public class Typeface {
             setFinalField("SANS_SERIF", DEFAULT);
             setFinalField("SANS_SERIF", create(familyName, 0));
             setFinalField("SERIF", create(familyName, 0));
-            setFinalField("MONOSPACE", create(familyName, 0));
 
             // For default aliases used in framework styles
             sSystemFontOverrides.put("sans-serif", typeface);

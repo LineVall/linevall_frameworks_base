@@ -117,6 +117,7 @@ public class PixelPropsUtils {
     private static final String[] packagesToChangeXP5 = {
             "com.activision.callofduty.shooter",
             "com.garena.game.codm",
+            "com.tencent.tmgp.kr.codm",
             "com.vng.codmvn"
     };
 
@@ -298,6 +299,9 @@ public class PixelPropsUtils {
                 setPropValue("FINGERPRINT", Build.VERSION.INCREMENTAL);
             }
         } else {
+
+            if (!SystemProperties.getBoolean("persist.sys.pixelprops.games", false))
+                return;
 
             if (Arrays.asList(packagesToChangeROG1).contains(packageName)) {
                 if (DEBUG) Log.d(TAG, "Defining props for: " + packageName);

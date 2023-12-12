@@ -6520,6 +6520,24 @@ public final class Settings {
         public static final String ZEN_ALLOW_LIGHTS = "allow_lights";
 
         /**
+         * Whether the phone vibrates on call connect
+         * @hide
+         */
+        public static final String VIBRATE_ON_CONNECT = "vibrate_on_connect";
+
+        /**
+         * Whether the phone vibrates on call waiting
+         * @hide
+         */
+        public static final String VIBRATE_ON_CALLWAITING = "vibrate_on_callwaiting";
+
+        /**
+         * Whether the phone vibrates on disconnect
+         * @hide
+         */
+        public static final String VIBRATE_ON_DISCONNECT = "vibrate_on_disconnect";
+
+        /**
          * Gesture navbar IME space.
          * Supported modes: 0 for normal length, 1 for narrow and 2 for hidden.
          * Default 0.

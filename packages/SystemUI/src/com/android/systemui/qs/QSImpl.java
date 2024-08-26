@@ -250,6 +250,7 @@ public class QSImpl implements QS, CommandQueue.Callbacks, StatusBarStateControl
                 (v, scrollX, scrollY, oldScrollX, oldScrollY) -> {
                     // Lazily update animators whenever the scrolling changes
                     mQSAnimator.requestAnimatorUpdate();
+                    mHeader.upToDown(scrollY);
                     if (mScrollListener != null) {
                         mScrollListener.onQsPanelScrollChanged(scrollY);
                     }
@@ -709,6 +710,8 @@ public class QSImpl implements QS, CommandQueue.Callbacks, StatusBarStateControl
         boolean fullyCollapsed = expansion == 0.0f;
         int heightDiff = getHeightDiff();
         float panelTranslationY = translationScaleY * heightDiff;
+
+        mHeader.setExpansion(onKeyguardAndExpanded, expansion, panelTranslationY);
 
         if (expansion < 1 && expansion > 0.99) {
             if (mQuickQSPanelController.switchTileLayout(false)) {

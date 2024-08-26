@@ -437,6 +437,10 @@
         <item name="onShadeInactiveVariant">?android:attr/textColorSecondary</item>
         <item name="shadeDisabled">@*android:color/surface_light</item>
         <item name="underSurface">@android:color/system_neutral1_100</item>
+        <item name="offStateColor">@android:color/system_neutral2_10</item>
+        <item name="colorSurfaceCustom">@android:color/system_neutral2_200</item>
+        <item name="textMediaTitle">@android:color/black</item>
+        <item name="textMediaOplus">@android:color/white</item>
         <item name="android:itemTextAppearance">@style/Control.MenuItem</item>
     </style>
 

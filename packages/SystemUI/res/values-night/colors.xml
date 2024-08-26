@@ -109,4 +109,8 @@
 
     <!-- Keyboard shortcut helper dialog -->
     <color name="ksh_key_item_color">@*android:color/system_on_surface_variant_dark</color>
+
+    <!-- OnePlus QS -->
+    <color name="qs_media_oplus_title_color">#FFFFFFFF</color>
+    <color name="qs_media_oplus_bg_color">@android:color/system_neutral2_600</color>
 </resources>

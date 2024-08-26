@@ -130,6 +130,10 @@
     <attr name="onShadeInactive" format="reference|color" />
     <attr name="onShadeInactiveVariant" format="reference|color" />
     <attr name="shadeDisabled" format="reference|color" />
+    <attr name="offStateColor" format="reference|color" />
+    <attr name="colorSurfaceCustom" format="reference|color" />
+    <attr name="textMediaTitle" format="reference|color" />
+    <attr name="textMediaOplus" format="reference|color" />
     <attr name="surfaceBright" format="reference|color" />
     <attr name="scHigh" format="reference|color" />
     <attr name="tertiary" format="reference|color" />

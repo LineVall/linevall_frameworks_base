@@ -22,6 +22,15 @@ import com.android.systemui.util.ViewController;
 
 import javax.inject.Inject;
 
+import com.android.systemui.qs.QuickStatusBarHeader;
+import com.android.systemui.qs.QuickQSPanelController;
+import com.android.systemui.qs.QSPanelController;
+import com.android.systemui.statusbar.connectivity.AccessPointController;
+import com.android.systemui.statusbar.policy.BluetoothController;
+import com.android.systemui.qs.tiles.dialog.bluetooth.BluetoothTileDialogViewModel;
+import com.android.systemui.qs.tiles.dialog.InternetDialogManager;
+import com.android.systemui.media.dialog.MediaOutputDialogFactory;
+
 /**
  * Controller for {@link QuickStatusBarHeader}.
  */
@@ -30,20 +39,31 @@ class QuickStatusBarHeaderController extends ViewController<QuickStatusBarHeader
 
     private final QuickQSPanelController mQuickQSPanelController;
     private boolean mListening;
-    private final boolean mSceneContainerEnabled;
 
     @Inject
-    QuickStatusBarHeaderController(QuickStatusBarHeader view,
-            QuickQSPanelController quickQSPanelController,
-            SceneContainerFlags sceneContainerFlags
+    QuickStatusBarHeaderController(
+        QuickStatusBarHeader quickStatusBarHeader,
+        QuickQSPanelController quickQSPanelController,
+        QSPanelController qsPanelController,
+        AccessPointController accessPointController,
+        BluetoothController bluetoothController,
+        BluetoothTileDialogViewModel bluetoothDialogViewModel,
+        InternetDialogManager InternetDialogManager,
+        MediaOutputDialogFactory mediaOutputDialogFactory
     ) {
-        super(view);
+        super(quickStatusBarHeader);
         mQuickQSPanelController = quickQSPanelController;
-        mSceneContainerEnabled = sceneContainerFlags.isEnabled();
+        quickStatusBarHeader.mQSPanelController = qsPanelController;
+        quickStatusBarHeader.mAccessPointController = accessPointController;
+        quickStatusBarHeader.mBluetoothDialogViewModel = bluetoothDialogViewModel;
+        quickStatusBarHeader.mInternetDialogManager = InternetDialogManager;
+        quickStatusBarHeader.mBluetoothController = bluetoothController;
+        quickStatusBarHeader.mMediaOutputDialogFactory = mediaOutputDialogFactory;
     }
+
     @Override
     protected void onViewAttached() {
-        mView.setSceneContainerEnabled(mSceneContainerEnabled);
+        // ignore
     }
 
     @Override

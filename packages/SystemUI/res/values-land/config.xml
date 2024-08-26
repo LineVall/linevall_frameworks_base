@@ -33,6 +33,9 @@
     <!-- The number of columns that the top level tiles span in the QuickSettings -->
     <integer name="quick_settings_user_time_settings_tile_span">2</integer>
 
+    <!-- The maximum number of tiles in the QuickQSPanel -->
+    <integer name="quick_qs_panel_max_tiles">4</integer>
+
     <!-- orientation of the dead zone when touches have recently occurred elsewhere on screen -->
     <integer name="navigation_bar_deadzone_orientation">1</integer>
 

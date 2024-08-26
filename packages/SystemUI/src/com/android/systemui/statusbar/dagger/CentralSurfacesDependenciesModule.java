@@ -19,6 +19,7 @@ package com.android.systemui.statusbar.dagger;
 import static com.android.systemui.Flags.predictiveBackAnimateDialogs;
 
 import android.content.Context;
+import android.media.session.MediaSessionManager;
 import android.os.RemoteException;
 import android.service.dreams.IDreamManager;
 import android.util.Log;
@@ -94,7 +95,8 @@ public interface CentralSurfacesDependenciesModule {
             MediaDataManager mediaDataManager,
             DumpManager dumpManager,
             StatusBarStateController statusBarStateController,
-            TunerService tunerService) {
+            TunerService tunerService,
+            MediaSessionManager mediaSessionManager) {
         return new NotificationMediaManager(
                 context,
                 visibilityProvider,
@@ -103,7 +105,8 @@ public interface CentralSurfacesDependenciesModule {
                 mediaDataManager,
                 dumpManager,
                 statusBarStateController,
-                tunerService);
+                tunerService,
+                mediaSessionManager);
     }
 
     /** */

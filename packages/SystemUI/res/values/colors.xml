@@ -263,4 +263,8 @@
     <!-- Rear Display Education -->
     <color name="rear_display_overlay_animation_background_color">#1E1B17</color>
     <color name="rear_display_overlay_dialog_background_color">#1E1B17</color>
+
+    <!-- OnePlus QS -->
+    <color name="qs_media_oplus_title_color">#FF000000</color>
+    <color name="qs_media_oplus_bg_color">@android:color/system_neutral2_200</color>
 </resources>

@@ -32,7 +32,7 @@
     android:paddingTop="0dp"
     android:paddingEnd="0dp"
     android:paddingStart="0dp"
-    android:elevation="4dp" >
+    android:elevation="4dp">
 
     <!-- Header Image -->
     <com.bosphere.fadingedgelayout.FadingEdgeLayout
@@ -43,7 +43,7 @@
         android:layout_marginRight="-50dp"
         android:background="#00000000"
         sysui:fel_edge="bottom"
-        sysui:fel_size_bottom="@dimen/qs_header_image_fade_size" >
+        sysui:fel_size_bottom="@dimen/qs_header_image_fade_size">
 
         <LinearLayout
           android:id="@+id/layout_inner_header"
@@ -51,7 +51,7 @@
           android:layout_height="match_parent"
           android:layout_marginLeft="0dp"
           android:layout_marginRight="0dp"
-          android:background="#00000000" >
+          android:background="#00000000">
 
           <ImageView
               android:id="@+id/qs_header_image_view"
@@ -65,16 +65,29 @@
 
     </com.bosphere.fadingedgelayout.FadingEdgeLayout>
 
-    <com.android.systemui.qs.QuickQSPanel
-        android:id="@+id/quick_qs_panel"
-        android:layout_width="match_parent"
+    <RelativeLayout
+        android:id="@+id/qs_container"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/qqs_layout_margin_top"
+        android:layout_gravity="top"
         android:clipChildren="false"
-        android:clipToPadding="false"
-        android:focusable="true"
-        android:paddingTop="@dimen/custom_qs_panel_padding_top"
-        android:paddingBottom="@dimen/qqs_layout_padding_bottom"
-        android:importantForAccessibility="no">
-    </com.android.systemui.qs.QuickQSPanel>
+        android:clipToPadding="false">
+
+        <include layout="@layout/qs_media_oplus_container" />
+
+        <com.android.systemui.qs.QuickQSPanel
+            android:id="@+id/quick_qs_panel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="0dp"
+            android:layout_below="@id/qs_media_oplus_container"
+            android:clipChildren="false"
+            android:clipToPadding="false"
+            android:focusable="true"
+            android:paddingTop="@dimen/custom_qs_panel_padding_top"
+            android:paddingBottom="@dimen/qqs_layout_padding_bottom"
+            android:importantForAccessibility="no">
+        </com.android.systemui.qs.QuickQSPanel>
+
+    </RelativeLayout>
 </com.android.systemui.qs.QuickStatusBarHeader>

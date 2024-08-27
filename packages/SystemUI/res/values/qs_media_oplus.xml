@@ -7,11 +7,12 @@
 
      <!-- Default title of media player -->
      <string name="qs_media_oplus_default_title">Not playing</string>
+     <string name="qs_media_oplus_default_subtitle">Media</string>
 
      <!-- Media player dimens -->
-     <dimen name="qs_media_oplus_container_height">150dp</dimen>
+     <dimen name="qs_media_oplus_container_height">192dp</dimen>
      <dimen name="qs_media_oplus_corner_radius">20dp</dimen>
-     <dimen name="qs_media_oplus_container_expand_top_margin">16dp</dimen>
+     <dimen name="qs_media_oplus_container_expand_top_margin">12dp</dimen>
 
      <!-- Media player margin and padding -->
      <dimen name="qs_media_oplus_container_margin_top">16dp</dimen>
@@ -22,5 +23,5 @@
      <dimen name="qs_media_oplus_player_title_size">14sp</dimen>
      <dimen name="qs_media_oplus_player_subtitle_size">12sp</dimen>
 
-     <dimen name="qs_media_oplus_padding_top">136dp</dimen>
+     <dimen name="qs_media_oplus_padding_top">178dp</dimen>
 </resources>

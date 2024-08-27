@@ -134,6 +134,7 @@
     <attr name="colorSurfaceCustom" format="reference|color" />
     <attr name="textMediaTitle" format="reference|color" />
     <attr name="textMediaOplus" format="reference|color" />
+    <attr name="colorHeaderButton" format="reference|color" />
     <attr name="surfaceBright" format="reference|color" />
     <attr name="scHigh" format="reference|color" />
     <attr name="tertiary" format="reference|color" />

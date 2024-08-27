@@ -47,6 +47,7 @@ import android.os.SystemClock;
 import android.os.UserHandle;
 import android.provider.Settings;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
@@ -64,9 +65,12 @@ import com.android.internal.graphics.ColorUtils;
 
 import com.android.settingslib.Utils;
 import com.android.systemui.Dependency;
+import com.android.systemui.FontSizeUtils;
 import com.android.systemui.res.R;
 import com.android.systemui.crdroid.header.StatusBarHeaderMachine;
 import com.android.systemui.util.LargeScreenUtils;
+import android.text.TextUtils;
+import android.text.format.Formatter;
 
 import com.bosphere.fadingedgelayout.FadingEdgeLayout;
 
@@ -95,7 +99,9 @@ import android.net.NetworkCapabilities;
 import com.android.settingslib.bluetooth.BluetoothCallback;
 import com.android.settingslib.bluetooth.LocalBluetoothAdapter;
 import com.android.settingslib.bluetooth.LocalBluetoothManager;
+import com.android.settingslib.net.DataUsageController;
 import com.android.systemui.plugins.ActivityStarter;
+import com.android.systemui.plugins.FalsingManager;
 import android.media.session.MediaController;
 import android.media.session.MediaSessionLegacyHelper;
 import android.net.ConnectivityManager;
@@ -120,8 +126,11 @@ public class QuickStatusBarHeader extends FrameLayout
             NotificationMediaManager.MediaListener, Palette.PaletteAsyncListener, View.OnClickListener,
             View.OnLongClickListener {
 
+    private static final String TAG = "QuickStatusBarHeader";
+
     private boolean mExpanded;
     private boolean mQsDisabled;
+    private boolean mShouldShowUsageText;
 
     protected QuickQSPanel mHeaderQsPanel;
     public float mKeyguardExpansionFraction;
@@ -164,6 +173,7 @@ public class QuickStatusBarHeader extends FrameLayout
     private int colorSurface = Utils.getColorAttrDefaultColor(mContext, R.attr.colorSurfaceCustom);
     private int textMediaTitle = Utils.getColorAttrDefaultColor(mContext, R.attr.textMediaTitle);
     private int textMediaOplus = Utils.getColorAttrDefaultColor(mContext, R.attr.textMediaOplus);
+    private int iconHeaderButtonColor = Utils.getColorAttrDefaultColor(mContext, R.attr.colorHeaderButton);
 
     private int mColorArtwork = Color.BLACK;
     private int mColorArtworkCard = Color.BLACK;
@@ -171,6 +181,15 @@ public class QuickStatusBarHeader extends FrameLayout
 
     private ViewGroup mOplusQsContainer;
     private ViewGroup mOplusQsLayout;
+
+    private ViewGroup mOplusQsHeadFooter;
+
+    private ViewGroup mUsageContainer;
+    private TextView mUsageText;
+    private ImageView mUsageIcon;
+
+    private View mEditButton;
+    private ImageView mOplusQsSettingsButton;
 
     private ViewGroup mBluetoothButton;
     private ImageView mBluetoothIcon;
@@ -201,8 +220,9 @@ public class QuickStatusBarHeader extends FrameLayout
     private final WifiManager mWifiManager;
     private final NotificationMediaManager mNotificationMediaManager;
 
-    public TouchAnimator mQQSContainerAnimator;
+    public TouchAnimator mQQSContainerAnimator, mOplusQsSettingsButtonAnimator, mEditButtonAnimator, mUsageAnimator;
 
+    public FalsingManager mFalsingManager;
     public QSPanelController mQSPanelController;
     public BluetoothController mBluetoothController;
     public BluetoothTileDialogViewModel mBluetoothDialogViewModel;
@@ -210,9 +230,21 @@ public class QuickStatusBarHeader extends FrameLayout
     public AccessPointController mAccessPointController;
     public MediaOutputDialogFactory mMediaOutputDialogFactory;
 
+    private DataUsageController mDataController;
+
+    private boolean mHasNoSims;
+    private boolean mIsWifiConnected;
+    private String mWifiSsid;
+    private int mSubId;
+    private int mCurrentDataSubId;
+
+    private static final long DEBOUNCE_DELAY_MS = 200;
+
     private final Handler mHandler;
     private Runnable mUpdateRunnableBluetooth;
     private Runnable mUpdateRunnableInternet;
+    private Runnable mEditTileBtn;
+    private Runnable mSetUsageTextRunnable = this::setUsageText;
 
     public QuickStatusBarHeader(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -225,6 +257,7 @@ public class QuickStatusBarHeader extends FrameLayout
         mMediaIsPlaying = false;
         mActivityStarter = (ActivityStarter) Dependency.get(ActivityStarter.class);
         mConnectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        mDataController = new DataUsageController(context);
         mSubManager = (SubscriptionManager) context.getSystemService(Context.TELEPHONY_SUBSCRIPTION_SERVICE);
         mWifiManager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
         mNotificationMediaManager = (NotificationMediaManager) Dependency.get(NotificationMediaManager.class);
@@ -238,6 +271,15 @@ public class QuickStatusBarHeader extends FrameLayout
         mQsHeaderLayout = findViewById(R.id.layout_header);
         mQsHeaderImageView = findViewById(R.id.qs_header_image_view);
         mQsHeaderImageView.setClipToOutline(true);
+
+        mOplusQsHeadFooter = findViewById(R.id.qs_media_oplus_header_container);
+
+        mUsageContainer = findViewById(R.id.data_usage_container);
+        mUsageText = findViewById(R.id.data_usage);
+        mUsageIcon = findViewById(R.id.data_usage_icon);
+
+        mEditButton = findViewById(android.R.id.edit);
+        mOplusQsSettingsButton = findViewById(R.id.qs_media_oplus_header_settings);
 
         mOplusQsContainer = findViewById(R.id.qs_container);
         mOplusQsLayout = findViewById(R.id.qs_media_oplus_container);
@@ -271,6 +313,9 @@ public class QuickStatusBarHeader extends FrameLayout
         mMediaBtnNext.setOnClickListener(this);
         mMediaBtnPlayPause.setOnClickListener(this);
 
+        mOplusQsSettingsButton.setOnClickListener(this);
+        mUsageText.setOnClickListener(this::onUsageTextClick);
+
         mInternetButton.setOnClickListener(this);
         mBluetoothButton.setOnClickListener(this);
 
@@ -281,6 +326,134 @@ public class QuickStatusBarHeader extends FrameLayout
 
         startUpdateInterntTileStateAsync();
         startUpdateBluetoothTileStateAsync();
+        updateSettingsBtn();
+        updateEditBtn();
+        updateableRunnerEditBtn();
+        setUsageText();
+    }
+
+    private void onUsageTextClick(View v) {
+        if (mSubManager.getActiveSubscriptionInfoCount() > 1) {
+            // Get opposite slot 2 ^ 3 = 1, 1 ^ 3 = 2
+            mSubId = mSubId ^ 3;
+            setUsageText();
+            mUsageText.setSelected(false);
+            postDelayed(() -> mUsageText.setSelected(true), 1000);
+        }
+    }
+
+    private void setUsageTextDebounced() {
+        mHandler.removeCallbacks(mSetUsageTextRunnable);
+        mHandler.postDelayed(mSetUsageTextRunnable, DEBOUNCE_DELAY_MS);
+    }
+
+    private void setUsageText() {
+        if (mUsageText == null) return;
+        Drawable backgroundUsage = mUsageContainer.getBackground();
+        backgroundUsage.setTint(colorInactive);
+        mUsageIcon.setImageResource(R.drawable.ic_data_usage_icon);
+        mUsageIcon.setColorFilter(colorLabelInactive);
+        DataUsageController.DataUsageInfo info;
+        String suffix;
+        if (mIsWifiConnected) {
+            info = mDataController.getWifiDailyDataUsageInfo(true);
+            if (info == null) {
+                info = mDataController.getWifiDailyDataUsageInfo(false);
+                suffix = mContext.getResources().getString(R.string.usage_wifi_default_suffix);
+            } else {
+                suffix = getWifiId();
+            }
+        } else if (!mHasNoSims) {
+            mDataController.setSubscriptionId(mSubId);
+            info = mDataController.getDailyDataUsageInfo();
+            suffix = getCarrierName();
+        } else {
+            mShouldShowUsageText = false;
+            mUsageText.setText(null);
+            updateVisibilities();
+            return;
+        }
+        if (info == null) {
+            Log.w(TAG, "setUsageText: DataUsageInfo is NULL.");
+            return;
+        }
+        // Setting text actually triggers a layout pass (because the text view is set to
+        // wrap_content width and TextView always relayouts for this). Avoid needless
+        // relayout if the text didn't actually change.
+        String text = formatDataUsage(info.usageLevel, suffix);
+        if (!TextUtils.equals(text, mUsageText.getText())) {
+            mUsageText.setText(formatDataUsage(info.usageLevel, suffix));
+        }
+        mShouldShowUsageText = true;
+        updateVisibilities();
+        mUsageContainer.setClipToOutline(true);
+    }
+
+    private String formatDataUsage(long byteValue, String suffix) {
+        // Example: 1.23 GB used today (airtel)
+        StringBuilder usage = new StringBuilder(Formatter.formatFileSize(getContext(),
+                byteValue, Formatter.FLAG_IEC_UNITS))
+                .append(" ")
+                .append(mContext.getString(R.string.usage_data));
+        return usage.toString();
+    }
+
+    private String getCarrierName() {
+        SubscriptionInfo subInfo = mSubManager.getActiveSubscriptionInfo(mSubId);
+        if (subInfo != null) {
+            return subInfo.getDisplayName().toString();
+        }
+        return mContext.getResources().getString(R.string.usage_data_default_suffix);
+    }
+
+    private String getWifiId() {
+        if (mWifiSsid != null) {
+            return mWifiSsid.replace("\"", "");
+        }
+        return mContext.getResources().getString(R.string.usage_wifi_default_suffix);
+    }
+
+    protected void setWifiSsid(String ssid) {
+        if (mWifiSsid != ssid) {
+            mWifiSsid = ssid;
+            setUsageTextDebounced();
+        }
+    }
+
+    protected void setIsWifiConnected(boolean connected) {
+        if (mIsWifiConnected != connected) {
+            mIsWifiConnected = connected;
+            setUsageTextDebounced();
+        }
+    }
+
+    protected void setNoSims(boolean hasNoSims) {
+        if (mHasNoSims != hasNoSims) {
+            mHasNoSims = hasNoSims;
+            setUsageTextDebounced();
+        }
+    }
+
+    protected void setCurrentDataSubId(int subId) {
+        if (mCurrentDataSubId != subId) {
+            mSubId = mCurrentDataSubId = subId;
+            setUsageTextDebounced();
+        }
+    }
+
+    private void updateBuildTextResources() {
+        FontSizeUtils.updateFontSizeFromStyle(mUsageText, R.style.TextAppearance_QS_Status_DataUsage);
+    }
+
+    private void updateUsageAnimator() {
+        mUsageAnimator = createUsageAnimator();
+    }
+
+    private TouchAnimator createUsageAnimator() {
+        TouchAnimator.Builder builder = new TouchAnimator.Builder()
+                .addFloat(mUsageText, "alpha", 0, 1)
+                .setStartDelay(0.9f);
+        return builder.build();
     }
 
     private void initBluetoothManager() {
@@ -330,6 +503,40 @@ public class QuickStatusBarHeader extends FrameLayout
             mBluetoothText.setTextColor(colorLabelInactive);
             mBluetoothChevron.setColorFilter(colorLabelInactive);
         }
+    }
+
+    private void updateSettingsBtn() {
+        Drawable background = mOplusQsSettingsButton.getBackground();
+        background.setTint(colorActive);
+        mOplusQsSettingsButton.setImageDrawable(getSettingsBtn());
+    }
+
+    private Drawable getSettingsBtn() {
+        Drawable SettingsBtn = ContextCompat.getDrawable(mContext, R.drawable.ic_media_oplus_settings_btn);
+        return SettingsBtn;
+    }
+
+    private void updateEditBtn() {
+        Drawable background = mEditButton.getBackground();
+        background.setTint(colorInactive);
+    }
+
+    public void updateOplusQsSettingsButtonAnim() {
+        this.mOplusQsSettingsButtonAnimator = new TouchAnimator.Builder()
+            .addFloat(this.mOplusQsSettingsButton, "rotation", new float[]{0.0f, 180.0f}).build();
+    }
+
+    public void updateEditButtonAnim() {
+        /*Resources resourcesZ = getResources();*/
+        /*float dimensionPixelEditBtn = (float) resourcesZ.getDimensionPixelSize(R.dimen.oplus_search_expand_translation_x);*/
+        /*TouchAnimator.Builder builderQ = new TouchAnimator.Builder();*/
+        this.mEditButtonAnimator = new TouchAnimator.Builder()
+            .addFloat(this.mEditButton, "alpha", 0, 0, 1).build();
+        /*this.mEditButtonAnimator = new TouchAnimator.Builder()
+            .addFloat(this.mEditButton, "translationX", new float[]{dimensionPixelEditBtn, 0.0f}).build();*/
+        /*this.mEditButtonAnimator = new TouchAnimator.Builder()
+            .addFloat(this.mEditButton, "rotation", new float[]{0.0f, 180.0f, 360.0f}).build();*/
+        scheduleEditBtnUpdate();
     }
 
     public void updateInterntTile() {
@@ -492,8 +699,8 @@ public class QuickStatusBarHeader extends FrameLayout
 
         mMediaPlayerTitle.setText(mMediaTitle == null ?
                                     mContext.getResources().getString(R.string.qs_media_oplus_default_title) : mMediaTitle);
-        mMediaPlayerSubtitle.setText(mMediaArtist == null ? "" : mMediaArtist);
-        mMediaPlayerSubtitle.setVisibility(mMediaArtist == null ? View.GONE : View.VISIBLE);
+        mMediaPlayerSubtitle.setText(mMediaArtist == null ?
+                                    mContext.getResources().getString(R.string.qs_media_oplus_default_subtitle) : mMediaArtist);
 
         if (mMediaIsPlaying) {
             mMediaBtnPlayPause.setImageResource(R.drawable.ic_media_oplus_player_act_pause);
@@ -566,6 +773,14 @@ public class QuickStatusBarHeader extends FrameLayout
             launchMediaPlayer();
         } else if (v == mMediaOutputSwitcher) {
             launchMediaOutputSwitcher(v);
+        } else if (v == mOplusQsSettingsButton) {
+            launchSettingsBtn();
+        } else if (v == mEditButton) {
+            boolean isExpanded = mExpanded;
+            if (isExpanded) {
+                launchEditButton(v);
+            };
+            return;
         }
     }
 
@@ -598,6 +813,16 @@ public class QuickStatusBarHeader extends FrameLayout
         if (packageName != null) {
             mMediaOutputDialogFactory.create(packageName, true, v);
         }
+    }
+
+    private void launchSettingsBtn() {
+        Intent appIntent = new Intent(android.provider.Settings.ACTION_SETTINGS);
+        mActivityStarter.startActivity(appIntent, true);
+    }
+
+    private void launchEditButton(View v) {
+        mEditButton.setOnClickListener(view ->
+            mActivityStarter.postQSRunnableDismissingKeyguard(() -> mQSPanelController.showEdit(view)));
     }
 
     private void sendMediaButtonClickEvent() {
@@ -650,6 +875,7 @@ public class QuickStatusBarHeader extends FrameLayout
         colorSurface = Utils.getColorAttrDefaultColor(mContext, R.attr.colorSurfaceCustom);
         textMediaTitle = Utils.getColorAttrDefaultColor(mContext, R.attr.textMediaTitle);
         textMediaOplus = Utils.getColorAttrDefaultColor(mContext, R.attr.textMediaOplus);
+        iconHeaderButtonColor = Utils.getColorAttrDefaultColor(mContext, R.attr.colorHeaderButton);
 
         Resources resources = mContext.getResources();
         int orientation = getResources().getConfiguration().orientation;
@@ -690,6 +916,9 @@ public class QuickStatusBarHeader extends FrameLayout
     	      applyHeaderBackgroundShadow();
         }
         updateMediaPlayer();
+        updateOplusQsSettingsButtonAnim();
+        updateEditButtonAnim();
+        updateUsageAnimator();
     }
 
     public void startUpdateInterntTileStateAsync() {
@@ -756,10 +985,29 @@ public class QuickStatusBarHeader extends FrameLayout
         }
     }
 
+    public void updateableRunnerEditBtn() {
+        Runnable runnable = mEditTileBtn;
+        mEditTileBtn = new Runnable() {
+            public void run() {
+                updateEditButtonAnim();
+            }
+        };
+    }
+
+    public void scheduleEditBtnUpdate() {
+        Runnable runnable;
+        if ((runnable = mEditTileBtn) != null) {
+            mHandler.postDelayed(runnable, 2500);
+        }
+        return;
+    }
+
     public void setExpanded(boolean expanded, QuickQSPanelController quickQSPanelController) {
         if (mExpanded == expanded) return;
         mExpanded = expanded;
         quickQSPanelController.setExpanded(expanded);
+        mEditButton.setOnClickListener(this);
+        updateEverything();
     }
 
     public void setExpansion(boolean forceExpanded, float expansionFraction, float panelTranslationY) {
@@ -769,11 +1017,27 @@ public class QuickStatusBarHeader extends FrameLayout
 			mQQSContainerAnimator.setPosition(keyguardExpansionFraction);
 		}
 
+        if (mOplusQsSettingsButtonAnimator != null) {
+            mOplusQsSettingsButtonAnimator.setPosition(keyguardExpansionFraction);
+        }
+
+        if (mEditButtonAnimator != null) {
+            mEditButtonAnimator.setPosition(keyguardExpansionFraction);
+        }
+
 		if (forceExpanded) {
 			setAlpha(expansionFraction);
 		} else {
 			setAlpha(1);
 		}
+
+        if (mUsageText == null) return;
+        if (keyguardExpansionFraction == 1.0f) {
+            postDelayed(() -> mUsageText.setSelected(true), 1000);
+        } else if (keyguardExpansionFraction == 0.0f) {
+            mUsageText.setSelected(false);
+            mSubId = mCurrentDataSubId;
+        }
 
 		mKeyguardExpansionFraction = keyguardExpansionFraction;
 	}
@@ -784,6 +1048,18 @@ public class QuickStatusBarHeader extends FrameLayout
         mQsDisabled = disabled;
         mHeaderQsPanel.setDisabledByPolicy(disabled);
         updateResources();
+        updateEverything();
+    }
+
+    void updateEverything() {
+        post(() -> {
+            updateVisibilities();
+            setUsageTextDebounced();
+        });
+    }
+
+    private void updateVisibilities() {
+        mUsageText.setVisibility(mShouldShowUsageText ? View.VISIBLE : View.INVISIBLE);
     }
 
     private void updateSettings() {
@@ -829,6 +1105,11 @@ public class QuickStatusBarHeader extends FrameLayout
                 doUpdateStatusBarCustomHeader(mCurrentBackground, true);
             }
         });
+    }
+
+    @Override
+    public void setVisibility(int visibility) {
+        mEditButton.setClickable(visibility == View.VISIBLE);
     }
 
     private void doUpdateStatusBarCustomHeader(final Drawable next, final boolean force) {

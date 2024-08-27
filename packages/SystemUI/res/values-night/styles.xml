@@ -54,6 +54,7 @@
         <item name="colorSurfaceCustom">@android:color/system_neutral2_500</item>
         <item name="textMediaTitle">@android:color/white</item>
         <item name="textMediaOplus">@android:color/white</item>
+        <item name="colorHeaderButton">@android:color/white</item>
         <item name="android:itemTextAppearance">@style/Control.MenuItem</item>
     </style>
 

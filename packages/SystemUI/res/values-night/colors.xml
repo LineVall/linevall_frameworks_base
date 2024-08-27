@@ -113,4 +113,5 @@
     <!-- OnePlus QS -->
     <color name="qs_media_oplus_title_color">#FFFFFFFF</color>
     <color name="qs_media_oplus_bg_color">@android:color/system_neutral2_600</color>
+    <color name="qs_media_oplus_icon_button_color">#FF000000</color>
 </resources>

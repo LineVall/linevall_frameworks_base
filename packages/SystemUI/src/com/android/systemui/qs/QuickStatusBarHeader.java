@@ -17,6 +17,7 @@ package com.android.systemui.qs;
 import static android.app.StatusBarManager.DISABLE2_QUICK_SETTINGS;
 import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
 
+import android.content.ComponentName;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.res.Configuration;
@@ -127,6 +128,9 @@ public class QuickStatusBarHeader extends FrameLayout
             View.OnLongClickListener {
 
     private static final String TAG = "QuickStatusBarHeader";
+
+    private static final Intent AFTERLAB_SETTING = new Intent().setComponent(new ComponentName(
+            "com.android.settings", "com.afterlife.afterlab.CustomizeDashboard"));
 
     private boolean mExpanded;
     private boolean mQsDisabled;
@@ -321,6 +325,7 @@ public class QuickStatusBarHeader extends FrameLayout
 
         mInternetButton.setOnLongClickListener(this);
         mBluetoothButton.setOnLongClickListener(this);
+        mOplusQsSettingsButton.setOnLongClickListener(this);
 
         updateSettings();
 
@@ -789,6 +794,8 @@ public class QuickStatusBarHeader extends FrameLayout
             mActivityStarter.postStartActivityDismissingKeyguard(new Intent(Settings.ACTION_WIFI_SETTINGS), 0);
         } else if (v == mBluetoothButton) {
             mActivityStarter.postStartActivityDismissingKeyguard(new Intent(Settings.ACTION_BLUETOOTH_SETTINGS), 0);
+        } else if (v == mOplusQsSettingsButton) {
+            launchAfterLabs();
         } else {
             return false;
         }
@@ -806,6 +813,15 @@ public class QuickStatusBarHeader extends FrameLayout
         }
 
         sendMediaButtonClickEvent();
+    }
+
+    private void launchAfterLabs() {
+        String settingsPackageName = "com.android.settings";
+        new Object().getClass();
+        Intent appIntent = new Intent();
+        String className = "com.android.settings.Settings$AfterlabSettingsActivity";
+        appIntent.setClassName(settingsPackageName, className);
+        mActivityStarter.startActivity(appIntent, true);
     }
 
     private void launchMediaOutputSwitcher(View v) {

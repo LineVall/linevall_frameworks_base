@@ -27,6 +27,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ListAdapter;
 
+import com.android.internal.R;
 import com.android.systemui.statusbar.BlurUtils;
 import com.android.systemui.dump.DumpManager;
 
@@ -88,7 +89,7 @@ public class GlobalActionsPowerDialog {
             window.addFlags(WindowManager.LayoutParams.FLAG_BLUR_BEHIND);
             // Set blur behind radius
             int blurBehindRadius = context.getResources()
-                    .getDimensionPixelSize(com.android.systemui.res.R.dimen.max_window_blur_radius);
+                    .getDimensionPixelSize(com.android.internal.R.dimen.max_window_blur_radius);
             window.getAttributes().setBlurBehindRadius(blurBehindRadius);
             window.setDimAmount(0.54f);
         } else {

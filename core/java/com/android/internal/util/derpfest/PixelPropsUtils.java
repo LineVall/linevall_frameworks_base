@@ -265,7 +265,10 @@ public final class PixelPropsUtils {
                 setPropValue("FINGERPRINT", Build.VERSION.INCREMENTAL);
                 return;
             } else {
-                if (isDeviceTablet(context.getApplicationContext())) {
+                boolean isPixelDevice = Arrays.asList(pTensorCodenames).contains(SystemProperties.get(DEVICE));
+                if (isPixelDevice) {
+                  return;
+                } else if (isDeviceTablet(context.getApplicationContext())) {
                     propsToChange.putAll(propsToChangePixelTablet);
                 } else {
                     propsToChange.putAll(propsToChangePixel9ProXL);

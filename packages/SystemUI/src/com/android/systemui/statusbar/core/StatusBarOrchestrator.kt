@@ -38,6 +38,7 @@ import com.android.systemui.statusbar.phone.AutoHideController
 import com.android.systemui.statusbar.phone.CentralSurfaces
 import com.android.systemui.statusbar.phone.PhoneStatusBarTransitions
 import com.android.systemui.statusbar.phone.PhoneStatusBarViewController
+import com.android.systemui.statusbar.phone.PhoneStatusBarView
 import com.android.systemui.statusbar.window.StatusBarWindowController
 import com.android.systemui.statusbar.window.data.model.StatusBarWindowState
 import com.android.systemui.statusbar.window.data.repository.StatusBarWindowStatePerDisplayRepository
@@ -181,6 +182,7 @@ constructor(
         statusBarInitializer.statusBarViewUpdatedListener =
             object : StatusBarInitializer.OnStatusBarViewUpdatedListener {
                 override fun onStatusBarViewUpdated(
+                    statusBarView: PhoneStatusBarView,
                     statusBarViewController: PhoneStatusBarViewController,
                     statusBarTransitions: PhoneStatusBarTransitions,
                 ) {

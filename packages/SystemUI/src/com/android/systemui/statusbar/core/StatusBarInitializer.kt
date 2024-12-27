@@ -66,6 +66,7 @@ interface StatusBarInitializer : CoreStartable {
 
     interface OnStatusBarViewUpdatedListener {
         fun onStatusBarViewUpdated(
+            statusBarView: PhoneStatusBarView,
             statusBarViewController: PhoneStatusBarViewController,
             statusBarTransitions: PhoneStatusBarTransitions,
         )
@@ -101,6 +102,7 @@ constructor(
             // If a listener is added after initialization, immediately call the callback
             component?.let { component ->
                 field?.onStatusBarViewUpdated(
+                    component.phoneStatusBarView,
                     component.phoneStatusBarViewController,
                     component.phoneStatusBarTransitions,
                 )
@@ -136,6 +138,7 @@ constructor(
                         component.init()
 
                         statusBarViewUpdatedListener?.onStatusBarViewUpdated(
+                            component.phoneStatusBarView,
                             component.phoneStatusBarViewController,
                             component.phoneStatusBarTransitions,
                         )
@@ -167,6 +170,7 @@ constructor(
                             (fragment as CollapsedStatusBarFragment).homeStatusBarComponent
                                 ?: throw IllegalStateException()
                         statusBarViewUpdatedListener?.onStatusBarViewUpdated(
+                            component!!.phoneStatusBarView,
                             component!!.phoneStatusBarViewController,
                             component!!.phoneStatusBarTransitions,
                         )

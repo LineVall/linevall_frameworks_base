@@ -335,18 +335,6 @@ public class NotificationMediaManager implements Dumpable {
         NotificationEntry mediaNotification = null;
         MediaController controller = null;
         for (NotificationEntry entry : allNotifications) {
-            if (entry.getSbn().getPackageName().toLowerCase().equals(NOWPLAYING_SERVICE)) {
-                mNowPlayingNotificationKey = entry.getSbn().getKey();
-                String notificationText = null;
-                final String title = entry.getSbn().getNotification()
-                        .extras.getString(Notification.EXTRA_TITLE);
-                if (!TextUtils.isEmpty(title)) {
-                    mNowPlayingTrack = title;
-                }
-                break;
-            }
-        }
-        for (NotificationEntry entry : allNotifications) {
             Notification notif = entry.getSbn().getNotification();
             if (notif.isMediaNotification()) {
                 final MediaSession.Token token =
@@ -385,6 +373,18 @@ public class NotificationMediaManager implements Dumpable {
         // Promote the media notification with a controller in 'playing' state, if any.
         StatusBarNotification statusBarNotification = null;
         MediaController controller = null;
+        for (StatusBarNotification sbn : allNotifications) {
+            if (sbn.getPackageName().toLowerCase().equals(NOWPLAYING_SERVICE)) {
+                mNowPlayingNotificationKey = sbn.getKey();
+                String notificationText = null;
+                final String title = sbn.getNotification()
+                        .extras.getString(Notification.EXTRA_TITLE);
+                if (!TextUtils.isEmpty(title)) {
+                    mNowPlayingTrack = title;
+                }
+                break;
+            }
+        }
         for (StatusBarNotification sbn : allNotifications) {
             Notification notif = sbn.getNotification();
             if (notif.isMediaNotification()) {

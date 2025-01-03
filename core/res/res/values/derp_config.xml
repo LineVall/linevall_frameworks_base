@@ -17,4 +17,7 @@
         <item>VERSION.RELEASE:1.0</item>
       -->
     </string-array>
+
+    <!-- These are system packages exempted from privacy indicator -->
+    <string-array name="config_indicatorExemptedPackageNames" translatable="false" />
 </resources>

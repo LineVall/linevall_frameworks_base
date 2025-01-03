@@ -6,4 +6,7 @@
 <resources>
     <!-- Build properties from a GMS certified device against current platform SPL level -->
     <java-symbol type="array" name="config_certifiedBuildProperties" />
+
+    <!-- These are system packages exempted from privacy indicator -->
+    <java-symbol type="array" name="config_indicatorExemptedPackageNames" />
 </resources>

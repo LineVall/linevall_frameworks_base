@@ -6,7 +6,7 @@
 <resources>
 
     <!-- Sliding QS Tile -->
-    <color name="tile_percentage_color">@*android:color/system_accent1_200</color>
+    <color name="tile_percentage_color">@*android:color/system_accent1_700</color>
 
     <!-- Island notification -->
     <color name="island_background_color">@android:color/system_neutral1_10</color>

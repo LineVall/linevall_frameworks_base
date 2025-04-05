@@ -6733,6 +6733,11 @@ public final class Settings {
         /**
          * @hide
          */
+        public static final String PROGRESS_BAR_OPACITY = "progress_bar_opacity";
+
+        /**
+         * @hide
+         */
         public static final String ISLAND_NOTIFICATION = "island_notification";
 
         /**

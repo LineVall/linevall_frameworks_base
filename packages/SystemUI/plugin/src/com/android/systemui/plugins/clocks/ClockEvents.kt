@@ -15,6 +15,7 @@ package com.android.systemui.plugins.clocks
 
 import com.android.systemui.plugins.annotations.ProtectedInterface
 import com.android.systemui.plugins.annotations.ProtectedReturn
+import android.content.res.Resources
 import java.util.Locale
 import java.util.TimeZone
 
@@ -45,4 +46,7 @@ interface ClockEvents {
 
     /** Update reactive axes for this clock */
     fun onFontAxesChanged(axes: List<ClockFontAxisSetting>)
+
+    /** Call whenever the color palette changes */
+    fun onColorPaletteChanged(palette: Resources)
 }

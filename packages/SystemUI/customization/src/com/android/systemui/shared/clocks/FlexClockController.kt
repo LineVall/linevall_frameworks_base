@@ -17,6 +17,7 @@
 package com.android.systemui.shared.clocks
 
 import com.android.systemui.customization.R
+import android.content.res.Resources
 import com.android.systemui.plugins.clocks.AlarmData
 import com.android.systemui.plugins.clocks.AxisType
 import com.android.systemui.plugins.clocks.ClockConfig
@@ -102,6 +103,11 @@ class FlexClockController(
                 val fontAxes = ClockFontAxis.merge(FONT_AXES, axes).map { it.toSetting() }
                 smallClock.events.onFontAxesChanged(fontAxes)
                 largeClock.events.onFontAxesChanged(fontAxes)
+            }
+
+            override fun onColorPaletteChanged(palette: Resources) {
+                smallClock.events.onColorPaletteChanged(palette)
+                largeClock.events.onColorPaletteChanged(palette)
             }
         }
 

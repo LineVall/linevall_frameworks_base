@@ -19,6 +19,7 @@ import android.graphics.Color
 import android.graphics.Rect
 import android.icu.text.NumberFormat
 import android.provider.Settings.Secure
+import android.provider.Settings.System
 import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
@@ -150,24 +151,7 @@ class DefaultClockController(
 
                 override fun onThemeChanged(theme: ThemeConfig) {
                     this@DefaultClockFaceController.theme = theme
-
-                    val color =
-                        when {
-                            theme.seedColor != null -> theme.seedColor!!
-                            theme.isDarkTheme ->
-                                resources.getColor(android.R.color.system_accent1_100)
-                            else -> resources.getColor(android.R.color.system_accent2_600)
-                        }
-
-                    if (currentColor == color) {
-                        return
-                    }
-
-                    currentColor = color
-                    view.setColors(DOZE_COLOR, color)
-                    if (!animations.dozeState.isActive) {
-                        view.animateColorChange()
-                    }
+                    updateColor()
                 }
 
                 override fun onTargetRegionChanged(targetRegion: Rect?) {
@@ -187,6 +171,33 @@ class DefaultClockController(
             }
 
         open fun recomputePadding(targetRegion: Rect?) {}
+
+        fun updateColor() {
+            val coloredClock = System.getInt(ctx.getContentResolver(),
+                System.LOCKSCREEN_CLOCK_COLORED, 1) != 0
+            val color = 
+                if (theme.seedColor != null && coloredClock) {
+                    theme.seedColor!!
+                } else if (theme.isDarkTheme) {
+                    if (coloredClock)
+                        resources.getColor(android.R.color.system_accent1_100)
+                    else
+                        resources.getColor(com.android.internal.R.color.primary_text_material_dark)
+                } else {
+                    if (coloredClock)
+                        resources.getColor(android.R.color.system_accent2_600)
+                    else
+                        resources.getColor(com.android.internal.R.color.primary_text_material_light)
+                }
+            if (currentColor == color) {
+                return
+            }
+            currentColor = color
+            view.setColors(DOZE_COLOR, color)
+            if (!animations.dozeState.isActive) {
+                view.animateColorChange()
+            }
+        }
     }
 
     inner class LargeClockFaceController(
@@ -279,6 +290,11 @@ class DefaultClockController(
         override fun onZenDataChanged(data: ZenData) {}
 
         override fun onFontAxesChanged(axes: List<ClockFontAxisSetting>) {}
+
+        override fun onColorPaletteChanged(palette: Resources) {
+            smallClock.updateColor()
+            largeClock.updateColor()
+        }
     }
 
     open inner class DefaultClockAnimations(

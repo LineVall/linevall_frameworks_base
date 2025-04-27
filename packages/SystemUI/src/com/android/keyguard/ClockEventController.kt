@@ -21,9 +21,11 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.content.res.Resources
+import android.database.ContentObserver
 import android.os.Trace
 import android.provider.Settings.Global.ZEN_MODE_IMPORTANT_INTERRUPTIONS
 import android.provider.Settings.Global.ZEN_MODE_OFF
+import android.provider.Settings.System
 import android.text.format.DateFormat
 import android.util.Log
 import android.util.TypedValue
@@ -65,6 +67,7 @@ import com.android.systemui.plugins.clocks.ZenData.ZenMode
 import com.android.systemui.res.R as SysuiR
 import com.android.systemui.scene.shared.flag.SceneContainerFlag
 import com.android.systemui.settings.UserTracker
+import com.android.systemui.shared.clocks.DefaultClockController
 import com.android.systemui.shared.regionsampling.RegionSampler
 import com.android.systemui.statusbar.policy.BatteryController
 import com.android.systemui.statusbar.policy.BatteryController.BatteryStateChangeCallback
@@ -259,23 +262,10 @@ constructor(
     }
 
     private fun updateColors() {
-        val isDarkTheme = isDarkTheme()
-        if (regionSamplingEnabled) {
-            clock?.smallClock?.run {
-                val isDark = smallRegionSampler?.currentRegionDarkness()?.isDark ?: isDarkTheme
-                events.onThemeChanged(theme.copy(isDarkTheme = isDark))
-            }
-            clock?.largeClock?.run {
-                val isDark = largeRegionSampler?.currentRegionDarkness()?.isDark ?: isDarkTheme
-                events.onThemeChanged(theme.copy(isDarkTheme = isDark))
-            }
-            return
-        }
-
-        clock?.run {
-            Log.i(TAG, "isThemeDark: $isDarkTheme")
-            smallClock.events.onThemeChanged(smallClock.theme.copy(isDarkTheme = isDarkTheme))
-            largeClock.events.onThemeChanged(largeClock.theme.copy(isDarkTheme = isDarkTheme))
+        if (clock is DefaultClockController) {
+            val defaultClock = clock as DefaultClockController
+            defaultClock.smallClock.updateColor()
+            defaultClock.largeClock.updateColor()
         }
     }
 
@@ -436,6 +426,13 @@ constructor(
             }
         }
 
+    private val settingsListener = object : ContentObserver(null) {
+        override fun onChange(selfChange: Boolean) {
+            clock?.events?.onColorPaletteChanged(resources)
+            updateColors()
+        }
+    }
+
     private fun handleZenMode(zen: Int) {
         val mode = ZenMode.fromInt(zen)
         if (mode == null) {
@@ -496,6 +493,13 @@ constructor(
         smallTimeListener?.update(shouldTimeListenerRun)
         largeTimeListener?.update(shouldTimeListenerRun)
 
+        settingsListener.onChange(true)
+        context.getContentResolver().registerContentObserver(
+            System.getUriFor(System.LOCKSCREEN_CLOCK_COLORED),
+            false, /* notifyForDescendants */
+            settingsListener
+        )
+
         bgExecutor.execute {
             // Query ZenMode data
             if (!ModesUi.isEnabled) {
@@ -526,6 +530,8 @@ constructor(
             largeClock.view.removeOnAttachStateChangeListener(largeClockOnAttachStateChangeListener)
         }
         smallClockFrame?.viewTreeObserver?.removeOnGlobalLayoutListener(onGlobalLayoutListener)
+
+        context.getContentResolver().unregisterContentObserver(settingsListener)
     }
 
     fun setFallbackWeatherData(data: WeatherData) {

@@ -78,4 +78,8 @@
 
     <!-- Udfps animation package -->
     <java-symbol type="string" name="config_udfps_animation_customization_package" />
+
+    <!-- Colored ls clock -->
+    <java-symbol type="color" name="primary_text_material_light" />
+    <java-symbol type="color" name="primary_text_material_dark" />
 </resources>

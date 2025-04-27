@@ -16,6 +16,8 @@
 
 package com.android.systemui.shared.clocks
 
+import android.content.Context
+import android.content.res.Resources
 import android.graphics.Rect
 import android.view.Gravity
 import android.view.View
@@ -146,6 +148,8 @@ class FlexClockFaceController(
         override fun onTargetRegionChanged(targetRegion: Rect?) {
             // When a clock needs to be aligned with screen, like weather clock
             // it needs to offset back the translation of keyguard_large_clock_top_margin
+            // With the targetRegion passed from picker,
+            // we will have yDiff = 0, no translation is needed for weather clock
             if (isLargeClock && (view as FlexClockView).isAlignedWithScreen()) {
                 val topMargin = keyguardLargeClockTopMargin
                 targetRegion?.let {
@@ -205,6 +209,11 @@ class FlexClockFaceController(
 
         override fun onZenDataChanged(data: ZenData) {
             layerController.events.onZenDataChanged(data)
+        }
+
+        override fun onColorPaletteChanged(palette: Resources) {
+            // Update the color based on the new palette
+            layerController.faceEvents.onThemeChanged(theme)
         }
     }
 

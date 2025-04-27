@@ -17,6 +17,7 @@
 package com.android.systemui.shared.clocks
 
 import android.graphics.Rect
+import android.content.res.Resources
 import androidx.annotation.VisibleForTesting
 import com.android.systemui.log.core.Logger
 import com.android.systemui.plugins.clocks.AlarmData
@@ -93,6 +94,10 @@ class ComposedDigitalLayerController(
 
             override fun onFontAxesChanged(axes: List<ClockFontAxisSetting>) {
                 view.updateAxes(axes)
+            }
+
+            override fun onColorPaletteChanged(palette: Resources) {
+                view.invalidate()
             }
 
             override var isReactiveTouchInteractionEnabled

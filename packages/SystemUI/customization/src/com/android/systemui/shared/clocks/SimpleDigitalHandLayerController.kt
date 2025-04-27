@@ -16,6 +16,8 @@
 
 package com.android.systemui.shared.clocks
 
+import android.content.Context
+import android.content.res.Resources
 import android.graphics.Rect
 import android.view.View
 import android.view.ViewGroup
@@ -242,6 +244,10 @@ open class SimpleDigitalHandLayerController<T>(
 
             override fun onFontAxesChanged(axes: List<ClockFontAxisSetting>) {
                 view.updateAxes(axes)
+            }
+
+            override fun onColorPaletteChanged(palette: Resources) {
+                faceEvents.onThemeChanged(ThemeConfig(true, null))
             }
         }
 
